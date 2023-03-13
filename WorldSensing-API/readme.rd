@@ -1,6 +1,8 @@
-Welcome to the API
+Welcome to the API, here you will find all the needed details.
 
-your_project_folder/
+You will find a folder structure like this:
+
+backend/
 │
 ├── api/
 │   ├── __init__.py
@@ -24,10 +26,8 @@ The __init__.py file is an empty file that tells Python that this folder is a Py
 
 database folder: This folder contains the file that defines the database controller (db_controller.py). 
 
-The __init__.py file is an empty file that tells Python that this folder is a Python package.
-
 auth folder: This folder contains the file that defines the authentication functions (auth.py). 
 
-The __init__.py file is an empty file that tells Python that this folder is a Python package.
-
 main.py: This is the main entry point of your application. It is where you start your API server and import the API router.
+
+
