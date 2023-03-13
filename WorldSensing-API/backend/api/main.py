@@ -50,6 +50,7 @@ def get_SortMapById(sortMap_id):
         status_code = status.HTTP_404_NOT_FOUND, 
         detail = "SortMap not found"
         )  
+
 # Line to add if I want AUTH in an endpoint:
 # current_user: str = Depends(get_current_user)
 
@@ -81,7 +82,7 @@ async def get_sortMap(sortMap_id: int) -> dict:
     if sortMap:
         return sortMap
     else:
-        raise HTTPException(
+        raise HTTPException( #TODO mirar aquesta excepcio ja que potser no cal al tenirla en la funcio get_SortMapById
             status_code = 404, 
             detail = "SortMap not found"
             )
