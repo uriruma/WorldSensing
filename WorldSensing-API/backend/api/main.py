@@ -6,18 +6,24 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi import Depends
 # from pydantic import BaseModel
 # from fastapi.responses import JSONResponse
-import mysql.connector
+from database.db_controller import *
 
 app = FastAPI()
 
 security = HTTPBasic()
+
+# conn()
+# createDDBB()
+# if conn() is not None:
+#     createDDBB()
+
 
 def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = "admin"
     correct_password = "admin"
     if credentials.username != correct_username or credentials.password != correct_password:
         raise HTTPException(
-            status_code = 401,
+            status_code = status.HTTP_401_UNAUTHORIZED,
             detail = "Incorrect user or password",
             headers = {"WWW-Authenticate": "Basic"},
         )
@@ -69,7 +75,7 @@ def get_SortMapById(sortMap_id):
 async def get_sortMaps(current_user: str = Depends(get_current_user)) -> dict:
     if not sortMaps_array:
         raise HTTPException(
-            status_code = 404, 
+            status_code = status.HTTP_404_NOT_FOUND, 
             detail = "SortMaps not found/empty"
         )
     return {"sortMaps": sortMaps_array}
@@ -166,7 +172,7 @@ async def delete_sortMap(sortMap_id: int) -> dict:
         return {"message" : f"sortMap with id: {sortMap_id} deleted with exit!"}
     else:
         raise HTTPException(
-            status_code = 404,
+            status_code = status.HTTP_404_NOT_FOUND,
             detail = "SortMap not found"
         )
 
@@ -185,7 +191,7 @@ def sortTextUsingSortMap(sortMap, text):
     print("sorting...")
     if any(not x.isdigit() for x in text):
         raise HTTPException(
-            status_code = 400, 
+            status_code = status.HTTP_400_BAD_REQUEST, 
             detail = "Input text must contain only digits"
             )
     mapping = {num: i for i, num in enumerate(sortMap)}
@@ -219,71 +225,4 @@ my_function()
 
 
 
-######       DDBB Conection       ######
 
-# Parameters
-hostname = 'localhost'
-username = 'root'
-password = 'root'
-database = 'python_test'
-
-# try:
-#    # Executing the SQL command
-#    cursor.execute(sql)
-
-#    # Commit your changes in the database
-#    conn.commit()
-
-# except:
-#    # Rolling back in case of error
-#    conn.rollback()
-
-# # Closing the connection
-# conn.close()
-
-def conn():
-    # Retrieve sensitive information from environment variables
-    hostname = "localhost"
-    username = "root"
-    password = "root"
-    database = "python_test"
-
-    # Initialize the connection and cursor variables
-    conn = None
-    cursor = None
-
-    try:
-        # Try to connect to the database
-        conn = mysql.connector.connect(
-            host = hostname,
-            user = username,
-            password = password,
-            
-        )
-        print('Connected to the server')
-
-        # Create the database if it doesn't exist
-        cursor = conn.cursor()
-        sql = f"CREATE DATABASE IF NOT EXISTS {database};"
-        cursor.execute(sql)
-        print('Database created')
-
-    except mysql.connector.Error as e:
-        print('Error connecting to the database:')
-        print(e.msg)
-        print('Error code:', e.errno)
-        
-    finally:
-        # Close the database connection and cursor
-        if cursor is not None:
-            cursor.close()
-            print('Cursor closed')
-        if conn is not None:
-            conn.close()
-            print('Database connection closed')
-
-
-######       DDBB Operations       ######
-
-
-conn()
