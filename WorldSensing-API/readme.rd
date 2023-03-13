@@ -31,3 +31,6 @@ auth folder: This folder contains the file that defines the authentication funct
 main.py: This is the main entry point of your application. It is where you start your API server and import the API router.
 
 
+Instructions:
+
+To run the api you should type pithon main.py in the folder
