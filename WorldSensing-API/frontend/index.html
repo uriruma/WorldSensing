@@ -26,3 +26,40 @@ function SortMapsList() {
 }
 
 export default SortMapsList;
+
+
+EXAMPLE v2
+
+import { useState } from 'react';
+import axios from 'axios';
+
+function App() {
+  const [sortMaps, setSortMaps] = useState([]);
+
+  async function fetchData() {
+    const response = await axios.get('/api/sortmaps');
+    setSortMaps(response.data.sortMaps);
+  }
+
+  return (
+    <div>
+      <button onClick={fetchData}>Fetch Data</button>
+      {sortMaps.map((sortMap) => (
+        <div key={sortMap.id}>
+          <p>ID: {sortMap.id}</p>
+          <p>Value: {sortMap.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default App;
+
+
+axios.get('https://example.com/api/data', {
+  headers: {
+    'Authorization': 'Basic ' + btoa('username:password')
+  }
+})
+
