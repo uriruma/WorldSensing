@@ -16,20 +16,7 @@ security = HTTPBasic()
 # createDDBB()
 # if conn() is not None:
 #     createDDBB()
-
-
-def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = "admin"
-    correct_password = "admin"
-    if credentials.username != correct_username or credentials.password != correct_password:
-        raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED,
-            detail = "Incorrect user or password",
-            headers = {"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username
-
-# Storage 
+# Default storage 
 sortMaps_array = [
     {
         "id": 1,
@@ -41,12 +28,28 @@ sortMaps_array = [
     }
 ]
 
-# sortMaps_array = []
+users_array = [
+    {
+        "username" : "admin",
+        "passwd" : "admin"
+    }
+]
+
+def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
+    user = get_UserByUsername(credentials.username)
+    if credentials.username != user["username"] or credentials.password != user["passwd"]:
+        raise HTTPException(
+            status_code = status.HTTP_401_UNAUTHORIZED,
+            detail = "Incorrect user or password",
+            headers = {"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
 
 # Global variable for not having repeated Id's
 next_id = max(sortMap["id"] for sortMap in sortMaps_array) + 1 if sortMaps_array else 1
 
-# Get SortMap from Array by the Id
+# Get SortMap and User auxiliar functions
 def get_SortMapById(sortMap_id):
     for sortMap in sortMaps_array:
         if sortMap ["id"] == sortMap_id:
@@ -56,6 +59,16 @@ def get_SortMapById(sortMap_id):
         status_code = status.HTTP_404_NOT_FOUND, 
         detail = "SortMap not found"
         )  
+
+def get_UserByUsername(username):
+    for user in users_array:
+        if user["username"] == username:
+            return user
+    raise HTTPException(
+        status_code = status.HTTP_404_NOT_FOUND,
+        detail = "User not found"
+    )
+
 
 # Line to add if I want AUTH in an endpoint:
 # current_user: str = Depends(get_current_user)
