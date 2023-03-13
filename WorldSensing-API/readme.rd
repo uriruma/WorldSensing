@@ -33,4 +33,4 @@ main.py: This is the main entry point of your application. It is where you start
 
 Instructions:
 
-To run the api you should type pithon main.py in the folder
+To run the app you should first type pithon main.py in the folder of backend to initiate the API server.
