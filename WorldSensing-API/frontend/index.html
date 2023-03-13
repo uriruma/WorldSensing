@@ -1,0 +1,28 @@
+import React, { useState, useEffect } from "react";
+
+function SortMapsList() {
+  const [sortMaps, setSortMaps] = useState([]);
+
+  useEffect(() => {
+    async function fetchSortMaps() {
+      const response = await fetch("/api/sortmaps");
+      const data = await response.json();
+      setSortMaps(data.sortMaps);
+    }
+    fetchSortMaps();
+  }, []);
+
+  return (
+    <div>
+      <h2>Sort Maps</h2>
+      {sortMaps.map((sortMap) => (
+        <div key={sortMap.id}>
+          <p>Sort Map ID: {sortMap.id}</p>
+          <p>Sort Map Value: {sortMap.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default SortMapsList;
