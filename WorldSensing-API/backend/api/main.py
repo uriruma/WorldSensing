@@ -65,7 +65,7 @@ def get_SortMapById(sortMap_id):
 # GET methods #
 
 # Get all the sortMaps 
-@app.get("/api/sortmaps")
+@app.get("/sortmaps")
 async def get_sortMaps(current_user: str = Depends(get_current_user)) -> dict:
     if not sortMaps_array:
         raise HTTPException(
@@ -76,22 +76,17 @@ async def get_sortMaps(current_user: str = Depends(get_current_user)) -> dict:
 
 
 # Get one SortMap based on Id
-@app.get("/api/sortmaps/{sortMap_id}")
+@app.get("/sortmaps/{sortMap_id}")
 async def get_sortMap(sortMap_id: int) -> dict:
     sortMap = get_SortMapById(sortMap_id)
     if sortMap:
         return sortMap
-    else:
-        raise HTTPException( #TODO mirar aquesta excepcio ja que potser no cal al tenirla en la funcio get_SortMapById
-            status_code = 404, 
-            detail = "SortMap not found"
-            )
 
 
 # PUT/POST methods #
 
 # POST request to insert SortMap into the array
-@app.post("/api/sortmap")
+@app.post("/sortmap")
 async def create_sortMap(data: dict) -> dict:
     global next_id  # use the global variable to keep track of Ids
     value = data.get("value")
@@ -112,7 +107,7 @@ async def create_sortMap(data: dict) -> dict:
 
 
 # PUT request to update SortMap value
-@app.put("/api/sortmap/{sortMap_id}")
+@app.put("/sortmap/{sortMap_id}")
 async def update_sortMap(sortMap_id: int, data: dict) -> dict:
     sortMap = get_SortMapById(sortMap_id)
     value = data.get("value")
@@ -130,8 +125,9 @@ async def update_sortMap(sortMap_id: int, data: dict) -> dict:
     return sortMap
 
 
-# POST request to sort a string using a sortMap
-@app.post("/api/order")
+# POST request to sort a string using a sortMap, 
+# in this function it is used sortmap for a more user-friendly url
+@app.post("/order")
 async def sort_text(sortmap_id: int, request_data: dict) -> dict:
     sortmap = get_SortMapById(sortmap_id)
     if not sortmap:
@@ -162,7 +158,7 @@ async def sort_text(sortmap_id: int, request_data: dict) -> dict:
 # DELETE methods #
 
 # Delete SortMap by Id
-@app.delete("/api/sortmap/{sortMap_id}")
+@app.delete("/sortmap/{sortMap_id}")
 async def delete_sortMap(sortMap_id: int) -> dict:
     sortMap = get_SortMapById(sortMap_id)
     if sortMap:
