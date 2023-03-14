@@ -168,7 +168,7 @@ def update_row(table_name, set_values, id):
 
 
 def delete_row(table_name: str, row_id: int) -> bool:
-    """Delete a row with the specified id from the given table."""
+    """ Delete a row with the specified id from the given table."""
     try:
         conn = connect_to_database()
         cur = conn.cursor()
@@ -215,19 +215,6 @@ def get_data_from_ddbb():
         print(f"Failed to get data from database: {error}")
         return [], []
 
-# def refresh_tables():
-#     if sortmaps_array:
-#         delete_table_rows("sortmaps")
-#         insert_rows("sortmaps", sortmaps_array)
-#         logging.info("sortmaps data refreshed")
-#     if users_array:
-#         delete_table_rows("users")
-#         insert_rows("users", users_array)
-#         logging.info("users data refreshed")
-#     else:
-#         print("not refreshed")
-    
-# manual insert
 def manual_insert():
     try:
         conn = connect_to_database()
@@ -235,8 +222,8 @@ def manual_insert():
 
         # Construct the SQL query to insert rows
         
-        insert_sortmaps_sql = "INSERT INTO python_api.sortmaps VALUES (1, '123456789');"
-        insert_users_sql = "INSERT INTO python_api.users VALUES ('admin', 'admin')"
+        insert_sortmaps_sql = "INSERT INTO python_api.sortmaps VALUES (1, '9876543210'), (2, '6780432159');"
+        insert_users_sql = "INSERT INTO python_api.users VALUES ('admin', 'admin'), ('test', 'test')"
         # Get the values to insert from the array
 
         # Execute the query
