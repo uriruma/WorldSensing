@@ -4,6 +4,7 @@ import time
 from fastapi import FastAPI, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi import Depends
+
 # from pydantic import BaseModel
 # from fastapi.responses import JSONResponse
 from database.db_controller import *
@@ -12,28 +13,37 @@ app = FastAPI()
 
 security = HTTPBasic()
 
-# conn()
-# createDDBB()
-# if conn() is not None:
-#     createDDBB()
 # Default storage 
-sortMaps_array = [
-    {
-        "id": 1,
-        "value": "9876543210"
-    },
-    {
-        "id": 2,
-        "value": "6780432159"
-    }
-]
+# sortmaps_array = [
+#     {
+#         "id": 1,
+#         "value": "9876543210"
+#     },
+#     {
+#         "id": 2,
+#         "value": "6780432159"
+#     }
+# ]
 
-users_array = [
-    {
-        "username" : "admin",
-        "passwd" : "admin"
-    }
-]
+# users_array = [
+#     {
+#         "username" : "admin",
+#         "passwd" : "admin"
+#     }
+# ]
+
+# print (sortmaps_array)
+# print(users_array)
+
+# DDBB Creation
+create_database()
+# conn = connect_to_database()
+manual_insert()
+sortmaps_array, users_array = get_data_from_ddbb()
+# refresh_tables()
+# insert_rows("sortmaps", sortmaps_array)
+# insert_rows("users", users_array)
+
 
 def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     user = get_UserByUsername(credentials.username)
@@ -47,17 +57,17 @@ def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
 
 
 # Global variable for not having repeated Id's
-next_id = max(sortMap["id"] for sortMap in sortMaps_array) + 1 if sortMaps_array else 1
+next_id = max(sortmap["id"] for sortmap in sortmaps_array) + 1 if sortmaps_array else 1
 
-# Get SortMap and User auxiliar functions
-def get_SortMapById(sortMap_id):
-    for sortMap in sortMaps_array:
-        if sortMap ["id"] == sortMap_id:
-            return sortMap 
+# Get sortmap and User auxiliar functions
+def get_sortmapById(sortmap_id):
+    for sortmap in sortmaps_array:
+        if sortmap ["id"] == sortmap_id:
+            return sortmap 
 
     raise HTTPException(
         status_code = status.HTTP_404_NOT_FOUND, 
-        detail = "SortMap not found"
+        detail = "sortmap not found"
         )  
 
 def get_UserByUsername(username):
@@ -83,76 +93,82 @@ def get_UserByUsername(username):
 
 # GET methods #
 
-# Get all the sortMaps 
+# Get all the sortmaps 
 @app.get("/sortmaps")
-async def get_sortMaps(current_user: str = Depends(get_current_user)) -> dict:
-    if not sortMaps_array:
+async def get_sortmaps(current_user: str = Depends(get_current_user)) -> dict:
+    if not sortmaps_array:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND, 
-            detail = "SortMaps not found/empty"
+            detail = "sortmaps not found/empty"
         )
-    return {"sortMaps": sortMaps_array}
+    # refresh_tables(sortmaps_array, users_array)
+    # delete_table_rows("sortmaps")
+    # delete_table_rows("users")
+    return {"sortmaps": sortmaps_array}
 
-
-# Get one SortMap based on Id
-@app.get("/sortmaps/{sortMap_id}")
-async def get_sortMap(sortMap_id: int) -> dict:
-    sortMap = get_SortMapById(sortMap_id)
-    if sortMap:
-        return sortMap
+# Get one sortmap based on Id
+@app.get("/sortmaps/{sortmap_id}")
+async def get_sortmap(sortmap_id: int) -> dict:
+    sortmap = get_sortmapById(sortmap_id)
+    if sortmap:
+        return sortmap
 
 
 # PUT/POST methods #
 
-# POST request to insert SortMap into the array
+# POST request to create a new sortmap 
 @app.post("/sortmap")
-async def create_sortMap(data: dict) -> dict:
+async def create_sortmap(data: dict) -> dict:
     global next_id  # use the global variable to keep track of Ids
     value = data.get("value")
     if not value:
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST,
-            detail = "SortMap value is required"
+            detail = "sortmap value is required"
         )
     if not isStringNotRepeatedNumbers(value):
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST,
-            detail = "SortMap value must be a sequence of unique digits"
+            detail = "sortmap value must be a sequence of unique digits"
         )
-    sortMap = {"id": next_id, "value": value}
-    sortMaps_array.append(sortMap)
+    sortmap = {"id": next_id, "value": value}
+    # sortmaps_array.append(sortmap)
     next_id += 1
-    return sortMap
+    insert_row("sortmaps", sortmap)
+    return sortmap
 
 
-# PUT request to update SortMap value
-@app.put("/sortmap/{sortMap_id}")
-async def update_sortMap(sortMap_id: int, data: dict) -> dict:
-    sortMap = get_SortMapById(sortMap_id)
+# PUT request to update sortmap value
+@app.put("/sortmap/{sortmap_id}")
+async def update_sortmap(sortmap_id: int, data: dict) -> dict:
+    sortmap = get_sortmapById(sortmap_id)
     value = data.get("value")
     if not value:
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST,
-            detail = "SortMap value is required"
+            detail = "sortmap value is required"
         )
     if not isStringNotRepeatedNumbers(value):
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST,
-            detail = "SortMap value must be a sequence of unique digits"
+            detail = "sortmap value must be a sequence of unique digits"
         )
-    sortMap["value"] = value
-    return sortMap
+    sortmap["value"] = value
+    sortmap_id = sortmap["id"]
+    update_row("sortmaps", data, sortmap_id)
+    # refresh_tables()
+    return sortmap
 
 
-# POST request to sort a string using a sortMap, 
+# POST request to sort a string using a sortmap, 
 # in this function it is used sortmap for a more user-friendly url
 @app.post("/order")
 async def sort_text(sortmap_id: int, request_data: dict) -> dict:
-    sortmap = get_SortMapById(sortmap_id)
+    sortmap = get_sortmapById(sortmap_id)
     if not sortmap:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND,
-            detail = "SortMap not found"
+            detail = "sortmap not found"
         )
 
     request_text = request_data.get("request")
@@ -163,7 +179,7 @@ async def sort_text(sortmap_id: int, request_data: dict) -> dict:
         )
 
     start_time = time.monotonic()
-    sorted_text = sortTextUsingSortMap(sortmap["value"], request_text )
+    sorted_text = sortTextUsingsortmap(sortmap["value"], request_text )
     end_time = time.monotonic()
 
     response = {
@@ -176,17 +192,15 @@ async def sort_text(sortmap_id: int, request_data: dict) -> dict:
 
 # DELETE methods #
 
-# Delete SortMap by Id
-@app.delete("/sortmap/{sortMap_id}")
-async def delete_sortMap(sortMap_id: int) -> dict:
-    sortMap = get_SortMapById(sortMap_id)
-    if sortMap:
-        sortMaps_array.remove(sortMap)
-        return {"message" : f"sortMap with id: {sortMap_id} deleted with exit!"}
+# Delete sortmap by Id
+@app.delete("/sortmap/{sortmap_id}")
+async def delete_sortmap(sortmap_id: int) -> dict:
+    if delete_row("sortmaps", sortmap_id):
+        return {"message": f"sortmap with id: {sortmap_id} deleted with exit!"}
     else:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND,
-            detail = "SortMap not found"
+            detail = "sortmap not found",
         )
 
 
@@ -200,42 +214,20 @@ def isStringNotRepeatedNumbers(string: str) -> bool:
 
 
 # Sort the text
-def sortTextUsingSortMap(sortMap, text):
+def sortTextUsingsortmap(sortmap, text):
     print("sorting...")
     if any(not x.isdigit() for x in text):
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST, 
             detail = "Input text must contain only digits"
             )
-    mapping = {num: i for i, num in enumerate(sortMap)}
+    mapping = {num: i for i, num in enumerate(sortmap)}
     return ''. join(sorted(text, key = lambda x: mapping[x]))
 
 
-sortTextUsingSortMap("6780432159", "135543817")
-
+sortTextUsingsortmap("6780432159", "135543817")
 
 def my_function():
   print("Hello from a function")
 
 my_function()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

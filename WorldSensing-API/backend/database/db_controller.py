@@ -1,6 +1,6 @@
-import logging
 import mysql.connector
-from database.__init__ import DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_NAME
+from fastapi import HTTPException, status
+from database.__init__ import DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_NAME, TABLES
 import logging
 
 config = {
@@ -11,24 +11,7 @@ config = {
 
 database = DB_NAME
 
-tables = [
-    {
-        'name': 'users',
-            'fields': [
-                {'name': 'username', 'type': 'VARCHAR(255)'},
-                {'name': 'passwd', 'type': 'VARCHAR(255)'},
-            ],
-            
-    },
-    {
-        'name': 'sortMaps',
-            'fields': [
-                {'name': 'id', 'type': 'INT'},
-                {'name': 'value', 'type': 'VARCHAR(255)'}
-            ],
-            'primary_key': 'id',
-    }   
-]
+tables = TABLES
 
 logging.basicConfig(filename = 'app.log', level = logging.INFO)
 
@@ -88,34 +71,30 @@ def create_database():
         cursor.close()
         conn.close()
 
-# Insert values from the array into a DDBB
-def insert_rows(table_name, values):
+# Insert a single row into a DDBB table
+def insert_row(table_name, values):
     try:
         conn = connect_to_database()
         cursor = conn.cursor()
 
-        # Construct the SQL query to insert rows
-        field_names = ', '.join(values[0].keys())
+        # Construct the SQL query to insert a row
+        field_names = ', '.join(values.keys())
         values_sql = ', '.join(['%s'] * len(values))
         insert_sql = f"INSERT INTO {table_name} ({field_names}) VALUES ({values_sql})"
         
-        # Get the values to insert from the array
-        values_to_insert = [tuple(val.values()) for val in values]
+        # Get the values to insert
+        values_to_insert = tuple(values.values())
 
         # Execute the query
-        cursor.executemany(insert_sql, values_to_insert)
+        cursor.execute(insert_sql, values_to_insert)
         conn.commit()
 
-        logging.info(f"Inserted {len(values_to_insert)} rows into {table_name} table")
+        logging.info(f"Inserted row into {table_name} table")
 
     except mysql.connector.Error as e:
-        logging.error(f"Failed to insert rows into {table_name} table")
+        logging.error(f"Failed to insert row into {table_name} table")
         logging.error(e.msg)
         raise
-
-    finally:
-        cursor.close()
-        conn.close()
 
 # DDBB Tables Deletion
 def delete_table(table_name):
@@ -163,41 +142,125 @@ def delete_table_rows(table_name):
         cursor.close()
         conn.close()
 
-create_database()
-conn = connect_to_database()
+# Update a row in a table
+def update_row(table_name, set_values, id):
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
 
-sortMaps_array = [
-    {
-        "id": 1,
-        "value": "9876543210"
-    },
-    {
-        "id": 2,
-        "value": "6780432159"
-    }
-]
+        # Construct the SQL query to update a row
+        set_clause = ', '.join([f"{field}=%s" for field in set_values.keys()])
+        update_sql = f"UPDATE {table_name} SET {set_clause} WHERE id = {id}"
 
-users_array = [
-    {
-        "username": 1,
-        "passwd": "9876543210"
-    },
-    {
-        "username": 2,
-        "passwd": "6780432159"
-    }
-]
+        # Get the values to set from the dictionary
+        values_to_set = tuple(set_values.values())
 
-def refresh_tables():
-    delete_table_rows("sortmaps")
-    delete_table_rows("users")
-    insert_rows("sortmaps", sortMaps_array)
-    insert_rows("users", users_array)
-    logging.info("Tables data refreshed")
+        # Execute the query
+        cursor.execute(update_sql, values_to_set)
+        conn.commit()
 
-# insert_row("sortmaps", array)
+        logging.info(f"Updated row in {table_name} table")
 
-# do something with the connection...
-conn.close()
+    except mysql.connector.Error as e:
+        logging.error(f"Failed to update row in {table_name} table")
+        logging.error(e.msg)
+        raise
+
+
+def delete_row(table_name: str, row_id: int) -> bool:
+    """Delete a row with the specified id from the given table."""
+    try:
+        conn = connect_to_database()
+        cur = conn.cursor()
+        query = f"DELETE FROM {table_name} WHERE id = %s"
+        cur.execute(query, (row_id,))
+        conn.commit()
+        return cur.rowcount > 0
+    finally:
+        conn.close()
+# sortmaps_array = [{        "id": 1,        "value": "9876543210"    },    {        "id": 2,        "value": "6780432159"    }]
+
+# users_array = [{        "username": "admin",        "passwd": "admin"    },    {        "username": "test",        "passwd": "test"    }]
+
+def get_data_from_ddbb():
+    try:
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        select_sortmaps_sql = "SELECT * FROM sortmaps"
+        select_users_sql = "SELECT * FROM users;"
+        cursor.execute(select_users_sql)
+        users_result = cursor.fetchall()
+
+        cursor.execute(select_sortmaps_sql)
+        sortmaps_result = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        # process result data here
+        users = []
+        for row in users_result:
+            user = {"username": row[0], "passwd": row[1]}
+            users.append(user)
+
+        sortmaps = []
+        for row in sortmaps_result:
+            sortmap = {"id": row[0], "value": row[1]}
+            sortmaps.append(sortmap)
+
+        return sortmaps, users
+
+    except mysql.connector.Error as error:
+        print(f"Failed to get data from database: {error}")
+        return [], []
+
+# def refresh_tables():
+#     if sortmaps_array:
+#         delete_table_rows("sortmaps")
+#         insert_rows("sortmaps", sortmaps_array)
+#         logging.info("sortmaps data refreshed")
+#     if users_array:
+#         delete_table_rows("users")
+#         insert_rows("users", users_array)
+#         logging.info("users data refreshed")
+#     else:
+#         print("not refreshed")
+    
+# manual insert
+def manual_insert():
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
+
+        # Construct the SQL query to insert rows
+        
+        insert_sortmaps_sql = "INSERT INTO python_api.sortmaps VALUES (1, '123456789');"
+        insert_users_sql = "INSERT INTO python_api.users VALUES ('admin', 'admin')"
+        # Get the values to insert from the array
+
+        # Execute the query
+        cursor.execute(insert_sortmaps_sql)
+        cursor.execute(insert_users_sql)
+        conn.commit()
+
+
+    except mysql.connector.Error as e:
+        logging.error(f"Failed to insert rows")
+        logging.error(e.msg)
+        raise
+
+    finally:
+        cursor.close()
+        conn.close()
+
+        
+# create_database()
+# # conn = connect_to_database()
+# manual_insert()
+# sortmaps_array, users_array = get_data_from_ddbb()
+
+# refresh_tables()
+# conn.close()
 
 
