@@ -1,5 +1,4 @@
 import mysql.connector
-from fastapi import HTTPException, status
 from database.__init__ import DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_NAME, TABLES
 import logging
 
@@ -18,6 +17,7 @@ logging.basicConfig(filename = 'app.log', level = logging.INFO)
 
 # Connect to DDBB
 def connect_to_database():
+    """Creates a conn object related to the database specified in the conf params."""
     try:
         conn = mysql.connector.connect(**config, database = database)
         logging.info('Connected to the MySQL server')
@@ -31,6 +31,7 @@ def connect_to_database():
 
 # DDBB Creation with Tables
 def create_database():
+    """Creates the database with the params of the __init__ file."""
     try:
         conn = mysql.connector.connect(**config)
         cursor = conn.cursor()
@@ -73,6 +74,7 @@ def create_database():
 
 # Insert a single row into a DDBB table
 def insert_row(table_name, values):
+    """ Inserts the data values given into a table with a specified name."""
     try:
         conn = connect_to_database()
         cursor = conn.cursor()
@@ -98,6 +100,7 @@ def insert_row(table_name, values):
 
 # DDBB Tables Deletion
 def delete_table(table_name):
+    """ Delete a table with the specified given name."""
     try:
         conn = connect_to_database()
         cursor = conn.cursor()
@@ -121,6 +124,7 @@ def delete_table(table_name):
 
 # DDBB Table Rows Deletion
 def delete_table_rows(table_name):
+    """ Delete all the data rows with the specified name of the table."""
     try:
         conn = connect_to_database()
         cursor = conn.cursor()
@@ -144,6 +148,7 @@ def delete_table_rows(table_name):
 
 # Update a row in a table
 def update_row(table_name, set_values, id):
+    """ Update a row with the specified id from the given table."""
     try:
         conn = connect_to_database()
         cursor = conn.cursor()
@@ -178,9 +183,6 @@ def delete_row(table_name: str, row_id: int) -> bool:
         return cur.rowcount > 0
     finally:
         conn.close()
-# sortmaps_array = [{        "id": 1,        "value": "9876543210"    },    {        "id": 2,        "value": "6780432159"    }]
-
-# users_array = [{        "username": "admin",        "passwd": "admin"    },    {        "username": "test",        "passwd": "test"    }]
 
 def get_data_from_ddbb():
     try:
@@ -240,14 +242,5 @@ def manual_insert():
     finally:
         cursor.close()
         conn.close()
-
-        
-# create_database()
-# # conn = connect_to_database()
-# manual_insert()
-# sortmaps_array, users_array = get_data_from_ddbb()
-
-# refresh_tables()
-# conn.close()
 
 
