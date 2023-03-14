@@ -3,3 +3,25 @@ fastapi == 0.70.0
 uvicorn == 0.15.0
 sqlalchemy == 1.4.23
 psycopg2-binary == 2.9.1
+
+To generate a requirements.txt file that includes the packages required by your application, you can use the pip freeze command. This command generates a list of all the packages installed in your current Python environment, along with their versions, which you can then save to a file.
+
+To generate the requirements.txt file for your application, you can follow these steps:
+
+Create a virtual environment for your project (optional, but recommended).
+Install the required packages using pip install or by using a requirements.txt file that already includes the required packages.
+Run the pip freeze command to generate the list of installed packages along with their versions.
+Save the output of the pip freeze command to a file called requirements.txt in the root directory of your project.
+For example, assuming you have already created a virtual environment and installed the required packages, you can generate a requirements.txt file by running the following command in your project directory:
+
+Copy code
+pip freeze > requirements.txt
+
+In your specific case, the requirements.txt file might look something like this:
+
+uvicorn == 0.15.0
+fastapi == 0.70.0
+mysql-connector-python == 8.0.27
+
+Note that you do not need to include time or logging in the requirements.txt file, 
+since these are built-in Python modules and do not need to be installed separately.
