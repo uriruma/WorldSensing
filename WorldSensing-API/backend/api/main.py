@@ -37,8 +37,8 @@ def get_sortmapById(sortmap_id):
             return sortmap 
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, 
-        detail="sortmap not found"
+        status_code = status.HTTP_404_NOT_FOUND, 
+        detail= "sortmap not found"
     )
 
 ######       Api Endpoints       ######
@@ -60,17 +60,13 @@ async def get_sortmaps() -> dict:
     Returns:
         - dict: A dictionary containing the sortmaps data
     """
-    sortmaps_array = get_data_from_ddbb() # reload data in the arrays
+    sortmaps_array, users_array = get_data_from_ddbb() # reload data in the arrays
     if not sortmaps_array:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND, 
             detail = "sortmaps not found/empty"
         )
     return {"sortmaps": sortmaps_array}
-
-
-
-
 
 # Get one sortmap based on Id
 @app.get("/sortmaps/{sortmap_id}")
@@ -81,6 +77,7 @@ async def get_sortmap(sortmap_id: int) -> dict:
 
 
 # PUT/POST methods #
+
 @app.post("/sortmap")
 async def create_sortmap(data: dict, current_user: str = Depends(get_current_user)) -> dict:
     """
@@ -114,7 +111,6 @@ async def create_sortmap(data: dict, current_user: str = Depends(get_current_use
     return sortmap
 
 
-
 @app.put("/sortmap/{sortmap_id}")
 async def update_sortmap(sortmap_id: int, data: dict, current_user: str = Depends(get_current_user)) -> dict:
     """
@@ -145,7 +141,6 @@ async def update_sortmap(sortmap_id: int, data: dict, current_user: str = Depend
     sortmap_id = sortmap["id"]
     update_row("sortmaps", data, sortmap_id)
     return sortmap
-
 
 
 @app.post("/order")
@@ -191,8 +186,8 @@ async def sort_text(sortmap_id: int, request_data: dict, current_user: str = Dep
     return response
 
 
-
 # DELETE methods #
+
 
 @app.delete("/sortmap/{sortmap_id}")
 async def delete_sortmap(sortmap_id: int, current_user: str = Depends(get_current_user)) -> dict:
@@ -217,7 +212,6 @@ async def delete_sortmap(sortmap_id: int, current_user: str = Depends(get_curren
         )
 
 
-
 def has_no_repeated_digits(input_string: str) -> bool:
     """
     Checks if a given string contains only unique digits.
@@ -234,6 +228,7 @@ def has_no_repeated_digits(input_string: str) -> bool:
     
     # Check that the value contains unique digits
     return len(set(input_string)) == len(input_string)
+
 
 def sort_text_using_sortmap(sortmap, text):
     """
