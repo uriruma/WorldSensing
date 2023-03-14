@@ -5,10 +5,8 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi import Depends
 from database.db_controller import *
-
+from auth.auth import *
 app = FastAPI()
-
-security = HTTPBasic()
 
 # DDBB Creation
 create_database()
@@ -19,17 +17,6 @@ sortmaps_array, users_array = get_data_from_ddbb() # reload the data in the arra
 
 print (sortmaps_array)
 print(users_array)
-
-def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
-    user = get_UserByUsername(credentials.username)
-    if credentials.username != user["username"] or credentials.password != user["passwd"]:
-        raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED,
-            detail = "Incorrect user or password",
-            headers = {"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username
-
 
 # Global variable for not having repeated Id's
 next_id = max(sortmap["id"] for sortmap in sortmaps_array) + 1 if sortmaps_array else 1
@@ -54,30 +41,6 @@ def get_sortmapById(sortmap_id):
         detail="sortmap not found"
     )
 
-def get_UserByUsername(username):
-    """
-    Returns the user with the given username.
-
-    Parameters:
-        - username (str): The username of the user to get.
-
-    Returns:
-        dict: A dictionary representing the retrieved user.
-    """
-    sortmaps_array, users_array = get_data_from_ddbb() # reload data in the arrays
-    for user in users_array:
-        if user["username"] == username:
-            return user
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="User not found"
-    )
-
-
-
-# Line to add if I want AUTH in an endpoint:
-# current_user: str = Depends(get_current_user)
-
 ######       Api Endpoints       ######
 
 # Home
@@ -90,14 +53,14 @@ def get_UserByUsername(username):
 
 # Get all the sortmaps 
 @app.get("/sortmaps")
-async def get_sortmaps(current_user: str = Depends(get_current_user)) -> dict:
+async def get_sortmaps() -> dict:
     """
     Gets all the sortmaps stored in the database.
     
     Returns:
         - dict: A dictionary containing the sortmaps data
     """
-    sortmaps_array, users_array = get_data_from_ddbb() # reload data in the arrays
+    sortmaps_array = get_data_from_ddbb() # reload data in the arrays
     if not sortmaps_array:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND, 
@@ -118,8 +81,8 @@ async def get_sortmap(sortmap_id: int) -> dict:
 
 
 # PUT/POST methods #
-
-async def create_sortmap(data: dict) -> dict:
+@app.post("/sortmap")
+async def create_sortmap(data: dict, current_user: str = Depends(get_current_user)) -> dict:
     """
     Creates a new sortmap with a unique ID and a specified value.
     
@@ -153,7 +116,7 @@ async def create_sortmap(data: dict) -> dict:
 
 
 @app.put("/sortmap/{sortmap_id}")
-async def update_sortmap(sortmap_id: int, data: dict) -> dict:
+async def update_sortmap(sortmap_id: int, data: dict, current_user: str = Depends(get_current_user)) -> dict:
     """
     Updates the value of a sortmap with the given id.
     
@@ -186,7 +149,7 @@ async def update_sortmap(sortmap_id: int, data: dict) -> dict:
 
 
 @app.post("/order")
-async def sort_text(sortmap_id: int, request_data: dict) -> dict:
+async def sort_text(sortmap_id: int, request_data: dict, current_user: str = Depends(get_current_user)) -> dict:
     """
     Sorts a string of digits according to the order of digits in a sortmap, using a POST request.
     
@@ -232,7 +195,7 @@ async def sort_text(sortmap_id: int, request_data: dict) -> dict:
 # DELETE methods #
 
 @app.delete("/sortmap/{sortmap_id}")
-async def delete_sortmap(sortmap_id: int) -> dict:
+async def delete_sortmap(sortmap_id: int, current_user: str = Depends(get_current_user)) -> dict:
     """
     Deletes a sortmap with the given ID from the database.
 
@@ -282,10 +245,6 @@ def sort_text_using_sortmap(sortmap, text):
     
     Returns:
         - str: The sorted string of digits.
-    
-    Raises:
-        - ValueError: If sortmap is empty or contains non-digit characters.
-        - ValueError: If text contains non-digit characters.
     """
     # Check that sortmap is not empty and contains only digits
     if not sortmap or any(not x.isdigit() for x in sortmap):
