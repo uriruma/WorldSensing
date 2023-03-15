@@ -1,9 +1,7 @@
 # main.py
 
 import time
-from fastapi import FastAPI, HTTPException, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi import Depends
+from fastapi import FastAPI, HTTPException, status, Depends
 from database.db_controller import *
 from auth.auth import *
 
@@ -259,8 +257,6 @@ def sort_text_using_sortmap(sortmap, text):
     sorted_text = ''.join(sorted(text, key = lambda x: mapping.get(x, len(sortmap))))
     
     return sorted_text
-
-sort_text_using_sortmap("6780432159", "135543817")
 
 def my_function():
   print("Hello from a function")

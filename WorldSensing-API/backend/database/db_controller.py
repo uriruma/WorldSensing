@@ -8,6 +8,7 @@ config = {
     'password': DB_PASSWORD
 }
 
+print (DB_HOSTNAME, DB_NAME, DB_PASSWORD, DB_USERNAME)
 database = DB_NAME
 
 tables = TABLES

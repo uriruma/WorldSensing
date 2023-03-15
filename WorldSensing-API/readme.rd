@@ -10,9 +10,10 @@ INSTRUCTIONS:
 
 Once you have opened the WorldSensing-API folder, follow the next steps: (you will need to have installed docker)
 
-    - To build the backend Docker image, navigate to the backend directory and run:
+    *****- To build the backend Docker image, navigate to the backend directory and run:
 
-        docker build -t backend .
+        docker build -t backend .*****
+        
 
     - To build the frontend Docker image, navigate to the frontend firectory and run:
 

@@ -1,6 +1,16 @@
 # __init__.py
 
-# Database parameters
+# import os
+# import mysql.connector
+
+# Get the values of the environment variables
+
+# DB_HOSTNAME = os.getenv('MYSQL_HOST', 'localhost')
+# #  = os.getenv('DB_PORT', '3306')
+# DB_NAME = os.getenv('MYSQL_DATABASE', 'python_test')
+# DB_USERNAME  = os.getenv('MYSQL_USER', 'root')
+# DB_PASSWORD = os.getenv('MYSQL_PASSWORD', 'root')
+# # Database parameters
 
 DB_HOSTNAME = 'localhost'
 DB_USERNAME = 'root'
