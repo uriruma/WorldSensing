@@ -21,27 +21,25 @@ function Api() {
         <div className="api-control-panel">
             <h2 className="api-title">API Control Panel</h2>
             <div className="api-data-card">
-            <h1 className="api-subtitle">Data from API</h1>
-            <table className="api-data-table">
-                <thead>
-                    <tr>
-                        <th>SortMap ID</th>
-                        <th>SortMap Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {sortMaps.map((sortMap) => (
-                    <tr key={sortMap.id}>
-                        <td>{sortMap.id}</td>
-                        <td>{sortMap.value}</td>
-                    </tr>
-            ))}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
+                <h1 className="api-subtitle">Data from API</h1>
+                <table className="api-data-table">
+                    <thead>
+                        <tr>
+                            <th>SortMap ID</th>
+                            <th>SortMap Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortMaps.map((sortMap) => (
+                        <tr key={sortMap.id}>
+                            <td>{sortMap.id}</td>
+                            <td>{sortMap.value}</td>
+                        </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     );
 }
 
