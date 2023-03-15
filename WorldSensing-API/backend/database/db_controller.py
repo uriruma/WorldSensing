@@ -1,5 +1,5 @@
 import mysql.connector
-from database.__init__ import DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_NAME, TABLES
+from __init__ import DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_NAME, TABLES
 import logging
 
 config = {

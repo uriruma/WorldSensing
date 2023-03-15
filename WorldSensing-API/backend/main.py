@@ -11,6 +11,7 @@ Description: Basic API interface implementation with interactions on a Database 
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from __init__ import *
 from api.main import app as api_router  # Import the API instance from api/main.py
 
 app = FastAPI()

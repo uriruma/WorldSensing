@@ -7,10 +7,10 @@ function Home () {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Go to the url: <code>"/api"</code> to show the API control panel.
+          Go to <code>"api control panel"</code> to show the API control panel.
         </p>
         <p>
-          Go to the url: <code>"/about"</code> to learn more about the API.
+          Go to <code>"about"</code> to learn more about the API.
         </p>
         <a
           className="App-link"
