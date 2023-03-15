@@ -6,7 +6,8 @@ app = FastAPI()
 
 security = HTTPBasic()
 
-# Line to add if I want AUTH in an endpoint: current_user: str = Depends(get_current_user)
+# Line to add if I want AUTH in an endpoint: 
+# current_user: str = Depends(get_current_user)
 
 def get_user_by_username(username):
     """
