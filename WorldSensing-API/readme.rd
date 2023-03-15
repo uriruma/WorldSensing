@@ -19,7 +19,7 @@ Once you have opened the WorldSensing-API folder, follow the next steps: (you wi
     - To start the backend first of all start a MYSQL server for example with XAMPP or MAMP.
 
     Then, once inside the folder /WorldSensing-API/backend run the command: "python main.py".
-    Now the Api will be running.
+    Now the Api will be running in a uvicorn server.
 
 
     - To build the frontend Docker image, navigate to the frontend firectory and run:
@@ -87,13 +87,13 @@ Backend:
 
 - main.py: This is the main entry point of your application. It is where you start your API server and import the API router.
 
-- Dockerfile: file ready to build and run using Docker (without mysql server)
+- Dockerfile: file ready to build and run using Docker (without mysql server).
 
-- requirements.txt: list of dependencies used in fastApi
+- requirements.txt: list of dependencies used in fastApi.
 
 
 Frontend:
 
-- my-api folder: This is the react app with its modules, the main App(src) and the entrance point (public)
+- my-api folder: This is the react app with its modules, the main App(src) and the entrance folder of the app (public).
 
-- Dockerfile: file ready to build and run using Docker
+- Dockerfile: file ready to build and run using Docker.
