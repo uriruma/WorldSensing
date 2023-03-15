@@ -24,6 +24,9 @@ EXPOSE 3000
 # Start the React application
 CMD ["npm", "run", "start"]
 
+RUN npm install react-router-dom;
+
+RUN npm install axios
 # Success! Created my-api at C:\Users\uriru\OneDrive\Escritorio\worldSensing\WorldSensing-API\frontend\my-api
 # Inside that directory, you can run several commands:
 

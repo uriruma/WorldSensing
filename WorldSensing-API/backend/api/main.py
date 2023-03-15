@@ -6,7 +6,10 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi import Depends
 from database.db_controller import *
 from auth.auth import *
+
+
 app = FastAPI()
+
 
 # DDBB Creation
 create_database()

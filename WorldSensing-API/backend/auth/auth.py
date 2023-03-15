@@ -16,15 +16,15 @@ def get_user_by_username(username):
         - username (str): The username of the user to get.
 
     Returns:
-        dict: A dictionary representing the retrieved user.
+        dict: A dictionary reprsenting the retrieved user.
     """
     sortmaps_array, users_array = get_data_from_ddbb() # reload data in the arrays
     for user in users_array:
         if user["username"] == username:
             return user
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="User not found"
+        status_code = status.HTTP_404_NOT_FOUND,
+        detail = "User not found"
     )
 
 def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
@@ -40,9 +40,9 @@ def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     user = get_user_by_username(credentials.username)
     if credentials.username != user["username"] or credentials.password != user["passwd"]:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect user or password",
-            headers={"WWW-Authenticate": "Basic"},
+            status_code =status.HTTP_401_UNAUTHORIZED,
+            detail = "Incorrect user or password",
+            headers = {"WWW-Authenticate": "Basic"},
         )
     return credentials.username
 
